@@ -14,7 +14,6 @@ class Pembimbing extends Model
 
     protected $fillable = [
         'kelas_id',
-        'nama_id',
 
         'nama',
         'nip',
@@ -51,9 +50,8 @@ class Pembimbing extends Model
     public function jadwaal() {
         return $this->hasMany(Jadwal::class, 'mapel_id');
     }
-    public function halaqoh()
-    {
-        return $this->belongsTo(Halaqoh::class, 'nama_id');
+    public function absensi() {
+        return $this->hasMany(Absensi::class, 'pembimbing_id');
     }
     
 }

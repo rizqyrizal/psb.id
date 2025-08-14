@@ -26,7 +26,6 @@ return new class extends Migration
             $table->json('wali_kelas')->nullable();
             $table->string('mapel');
 
-            $table->foreignId('nama_id')->constrained('halaqohs')->onDelete('cascade');
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
             $table->timestamps();
         });

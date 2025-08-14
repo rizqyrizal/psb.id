@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GuruInvitationController;
 
+Route::get('/', function () {
+    return redirect('/admin');
+});
+
 Route::post('/invite-guru', [GuruInvitationController::class, 'sendInvitation'])->name('send-guru-invitation');
 
 Route::get('/set-password', [GuruInvitationController::class, 'showSetPasswordForm'])->name('set-password');

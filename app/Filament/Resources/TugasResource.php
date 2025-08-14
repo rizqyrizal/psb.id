@@ -26,7 +26,7 @@ class TugasResource extends Resource
 
     protected static ?string $navigationLabel = 'Target Santri';
 
-        protected static ?string $navigationGroup = 'santri';
+        protected static ?string $navigationGroup = 'Santri';
 
     protected static ?string $pluralLabel = 'Tugas';
     protected static ?int $navigationGroupSort = 2;

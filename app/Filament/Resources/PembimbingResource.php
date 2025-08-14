@@ -192,14 +192,6 @@ class PembimbingResource extends Resource
                     ->label('Wali Kelas?')
                     ->boolean()
                     ->sortable(),
-                TextColumn::make('mustawa.nama')
-                    ->label('Mustawa')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('halaqoh.nama')
-                    ->label('Halaqoh')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('kelas.nama')
                     ->label('Wali Kelas dari')
                     ->sortable()

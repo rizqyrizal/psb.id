@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Filament\Resources; 
+namespace App\Filament\Resources;
 
 use App\Filament\Resources\KelasResource\Pages;
 use App\Models\Kelas;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
@@ -17,7 +18,7 @@ class KelasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationLabel = 'Kelas';
-        protected static ?string $navigationGroup = 'Kelas';
+    protected static ?string $navigationGroup = 'Kelola Pembimbing';
 
 
     public static function form(Form $form): Form
@@ -27,9 +28,14 @@ class KelasResource extends Resource
                 TextInput::make('nama')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('jenjang')
+                Select::make('jenjang')
+                    ->label('Jenjang')
                     ->required()
-                    ->maxLength(255),
+                    ->options([
+                        'SMK' => 'SMK',
+                        'SMP' => 'SMP',
+                    ])
+                    ->native(false),
                 TextInput::make('jurusan')
                     ->required()
                     ->maxLength(255),

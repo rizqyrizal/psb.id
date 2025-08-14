@@ -28,9 +28,9 @@ class CatatanResource extends Resource
 {
     protected static ?string $model = Catatan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-pencil';
     protected static ?string $navigationLabel = 'Catatan';
-        protected static ?string $navigationGroup = 'santri';
+        protected static ?string $navigationGroup = 'Santri';
     protected static ?string $pluralLabel = 'Catatan';
     protected static ?int $navigationGroupSort = 2;
 

@@ -29,8 +29,8 @@ class SantriResource extends Resource
 {
     protected static ?string $model = Santri::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-        protected static ?string $navigationGroup = 'santri';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+        protected static ?string $navigationGroup = 'Santri';
 
     protected static ?string $navigationLabel = ' kelola Santri';
     public static function form(Form $form): Form

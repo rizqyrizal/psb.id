@@ -16,11 +16,11 @@ class TagihanResource extends Resource
 {
     protected static ?string $model = Tagihan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-inbox-arrow-down';
 
     protected static ?string $navigationLabel = 'Tagihan';
     protected static ?string $modelLabel = 'Tagihan';
-        protected static ?string $navigationGroup = 'santri';
+        protected static ?string $navigationGroup = 'Santri';
 
     protected static ?string $pluralModelLabel = 'Daftar Tagihan';
 

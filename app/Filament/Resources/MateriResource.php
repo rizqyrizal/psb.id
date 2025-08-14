@@ -23,7 +23,7 @@ class MateriResource extends Resource
 {
     protected static ?string $model = Materi::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-book-open';
+    protected static ?string $navigationIcon = 'heroicon-o-folder-open';
     protected static ?string $navigationGroup = 'Kelola Pembimbing';
     protected static ?string $navigationLabel = 'Materi';
         protected static ?int $navigationGroupSort = 1;

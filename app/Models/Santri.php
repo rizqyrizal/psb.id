@@ -47,6 +47,9 @@ class Santri extends Model
     {
         return $this->hasMany(Absensi::class, 'santri_id');
     }
+    public function uangmasuk() {
+        return $this->hasMany(UangMasuk::class, 'santri_id');
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
