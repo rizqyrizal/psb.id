@@ -23,8 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'no_telepon',
         'current_team_id', // Tambahan kalau multi-team
-        'profile_photo_path', // Kalau pakai profile photo Jetstream
     ];
 
     /**
@@ -55,15 +55,6 @@ class User extends Authenticatable
     /**
      * Relasi ke Team (opsional, kalau project pakai multi-team)
      */
-    public function currentTeam()
-    {
-        return $this->belongsTo(Team::class, 'current_team_id');
-    }
-
-    public function teams()
-    {
-        return $this->hasMany(Team::class, 'user_id');
-    }
 
 
 }

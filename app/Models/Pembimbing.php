@@ -31,7 +31,7 @@ class Pembimbing extends Model
 
     protected $casts = [
     'wali_kelas_type' => 'array',
-    'mapel' => 'array', // Ini juga perlu diubah karena Anda menggunakan multiple() di sini
+    'mapel' => 'array',
 ];
 
     public function kelas()

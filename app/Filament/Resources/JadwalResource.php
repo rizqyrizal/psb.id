@@ -4,8 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\JadwalResource\Pages;
 use App\Models\Jadwal;
-use App\Models\Kelas;
-use App\Models\Guru;
 use App\Models\Pembimbing;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,8 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class JadwalResource extends Resource
 {
@@ -38,6 +34,7 @@ class JadwalResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
+
                 Select::make('pembimbing_id')
                     ->label('Pembimbing')
                     ->relationship('pembimbing', 'nama')
@@ -45,13 +42,32 @@ class JadwalResource extends Resource
                     ->searchable()
                     ->preload()
                     ->reactive(),
+
                 Select::make('mapel')
                     ->label('Mata Pelajaran')
                     ->options(function (Forms\Get $get) {
-                        $pembimbing = Pembimbing::find($get('pembimbing_id'));
-                        return $pembimbing ? [$pembimbing->mapel => $pembimbing->mapel] : [];
+                        $pembimbingId = $get('pembimbing_id');
+                        if (!$pembimbingId) {
+                            return [];
+                        }
+
+                        $pembimbing = Pembimbing::find($pembimbingId);
+                        if (!$pembimbing || empty($pembimbing->mapel)) {
+                            return [];
+                        }
+
+                        // Jika mapel adalah array (dari cast JSON)
+                        if (is_array($pembimbing->mapel)) {
+                            return collect($pembimbing->mapel)
+                                ->mapWithKeys(fn($mapel) => [$mapel => $mapel])
+                                ->toArray();
+                        }
+
+                        // Jika mapel adalah string
+                        return [$pembimbing->mapel => $pembimbing->mapel];
                     })
                     ->required(),
+
                 Select::make('hari')
                     ->label('Hari')
                     ->options([
@@ -64,10 +80,12 @@ class JadwalResource extends Resource
                         'Sunday'    => 'Minggu',
                     ])
                     ->required(),
+
                 TimePicker::make('jam_mulai')
                     ->label('Jam Mulai')
                     ->seconds(false)
                     ->required(),
+
                 TimePicker::make('jam_selesai')
                     ->label('Jam Selesai')
                     ->seconds(false)
@@ -133,9 +151,7 @@ class JadwalResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

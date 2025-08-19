@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('santri_id')->nullable()->constrained('santris')->onDelete('cascade');
             $table->foreignId('kelas_id')->nullable()->constrained('kelas')->onDelete('cascade');
 
-            $table->date('hari');
             $table->timestamps();
         });
     }

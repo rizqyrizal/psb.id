@@ -2,11 +2,13 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\HasilSantri;
+use App\Filament\Widgets\IuranPondokDanJenjang;
+use App\Filament\Widgets\JumlahKeuanganDanAbsensi;
+use App\Filament\Widgets\JumlahSantriPerKelas;
+use App\Filament\Widgets\KegiatanWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
-use App\Filament\Widgets\LatestAcaraWidget;
-use App\Filament\Widgets\NailyScheduleWidget;
-use App\Filament\Widgets\GyStatsOverview;
-use App\Filament\Widgets\MlassStudentCountWidget;
+use App\Filament\Widgets\ScheduleWidget;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 
@@ -18,7 +20,7 @@ class Dashboard extends BaseDashboard
     protected function getHeaderWidgets(): array
     {
         return [
-            GyStatsOverview::class, // Biasanya statistik di bagian atas
+            HasilSantri::class, // Biasanya statistik di bagian atas
         ];
     }
 
@@ -27,9 +29,12 @@ class Dashboard extends BaseDashboard
         return [
             AccountWidget::class,
             FilamentInfoWidget::class,
-            LatestAcaraWidget::class,
-            MlassStudentCountWidget::class,
-            NailyScheduleWidget::class,
+            KegiatanWidget::class,
+            JumlahSantriPerKelas::class,
+            ScheduleWidget::class,
+            IuranPondokDanJenjang::class,
+            JumlahKeuanganDanAbsensi::class,
         ];
     }
+
 }

@@ -13,17 +13,21 @@ class Absensi extends Model
         'santri_id',
         'kelas_id',
         'pembimbing_id',
+        'tanggal',
 
 
-        'hari'
     ];
-    public function santri() {
+
+    public function santri()
+    {
         return $this->belongsTo(Santri::class, 'santri_id');
     }
-    public function kelas() {
+    public function kelas()
+    {
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
-    public function pembimbing() {
+    public function pembimbing()
+    {
         return $this->belongsTo(Pembimbing::class, 'pembimbing_id');
     }
 }

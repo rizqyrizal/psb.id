@@ -13,6 +13,11 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Pastikan role 'admin' ada
+        Role::firstOrCreate(
+            ['name' => 'admin', 'guard_name' => 'web']
+        );
+
         // Buat user baru atau temukan jika sudah ada
         $user = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],

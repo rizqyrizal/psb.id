@@ -11,13 +11,6 @@ class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-        \App\Filament\Resources\UserResource\Widgets\InviteGuruWidget::class,
-        ];
-    }
-
     protected function getActions(): array
     {
         return [

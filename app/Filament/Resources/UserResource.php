@@ -33,51 +33,33 @@ class UserResource extends Resource
             Forms\Components\TextInput::make('email')
                 ->email()
                 ->unique(ignoreRecord: true)
-                ->required(fn (Get $get) => $get('roles') !== 'guru'),
+                ->required(fn(Get $get) => $get('roles') !== 'guru'),
 
-            Forms\Components\Select::make('current_team_id')
+            Forms\Components\TextInput::make('current_team_id')
                 ->label('Team')
-                ->relationship('currentTeam', 'name')
-                ->searchable()
-                ->preload()
-                ->nullable(),
+                ->numeric(),
 
-            Forms\Components\FileUpload::make('profile_photo_path')
-                ->label('Foto Profil')
-                ->image()
-                ->disk('public')
-                ->directory('profile-photos')
-                ->avatar(),
-
-            // Roles single value
             Forms\Components\Select::make('roles')
                 ->label('Roles')
-                ->options([
-                    'guru' => 'Guru',
-                    'user' => 'User',
-                    'editor' => 'Editor',
-                ])
+                ->relationship('roles', 'name')
+                ->multiple()
+                ->preload()
+                ->searchable()
                 ->required()
                 ->live()
-                ->afterStateUpdated(fn (Set $set) => $set('password', null)),
-
-            // Password tetap muncul, required kalau bukan guru
+                ->afterStateUpdated(fn(Set $set) => $set('password', null)),
             Forms\Components\TextInput::make('password')
                 ->password()
                 ->maxLength(255)
-                ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
-                ->dehydrated(fn ($state) => filled($state))
-                ->required(fn (Get $get, string $operation) => $get('roles') !== 'guru' && $operation === 'create'),
+                ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                ->dehydrated(fn($state) => filled($state))
+                ->required(fn(Get $get, string $operation) => $get('roles') !== 'guru' && $operation === 'create'),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\ImageColumn::make('profile_photo_path')
-                ->label('Foto')
-                ->circular(),
-
             Tables\Columns\TextColumn::make('name')
                 ->searchable()
                 ->sortable(),
@@ -85,15 +67,17 @@ class UserResource extends Resource
             Tables\Columns\TextColumn::make('email')
                 ->searchable(),
 
-            Tables\Columns\TextColumn::make('team.name')
-                ->label('Team')
-                ->sortable()
-                ->searchable(),
+            Tables\Columns\TextInputColumn::make('current_team_id')
+                ->placeholder('numeric')
+                ->sortable(),
 
-            Tables\Columns\TextColumn::make('roles')
+            // ✅ Perbaikan di sini
+            Tables\Columns\TextColumn::make('roles.name')
                 ->label('Roles')
                 ->badge()
-                ->sortable(),
+                ->sortable()
+                ->searchable()
+                ->formatStateUsing(fn($state) => is_array($state) ? implode(', ', $state) : $state),
 
             Tables\Columns\TextColumn::make('created_at')
                 ->label('Dibuat')

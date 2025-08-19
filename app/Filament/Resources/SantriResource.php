@@ -58,7 +58,7 @@ class SantriResource extends Resource
                                     ->options([
                                         'laki-laki' => 'Laki-laki',
                                         'perempuan' => 'Perempuan',
-                                    ])
+                                        ])
                                     ->required(),
                             ]),
                         Grid::make(2)
