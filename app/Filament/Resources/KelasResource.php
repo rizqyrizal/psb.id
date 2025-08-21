@@ -84,6 +84,15 @@ class KelasResource extends Resource
             //
         ];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'nama',
+        'jenjang',
+        'jurusan',
+    ];
+}
+
 
     public static function getPages(): array
     {

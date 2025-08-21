@@ -112,6 +112,16 @@ class TugasResource extends Resource
             // Add any relation managers here if needed
         ];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'target',
+        'deskripsi',
+        'satuan',
+        'mapel.nama',
+    ];
+}
+
 
     public static function getPages(): array
     {

@@ -29,5 +29,6 @@
                 <div class="p-4 text-center text-gray-500 dark:text-gray-400">Tidak ada jadwal hari ini.</div>
             @endforelse
         </div>
+        
     </x-filament::card>
 </x-filament::widget>

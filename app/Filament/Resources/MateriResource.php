@@ -112,6 +112,16 @@ class MateriResource extends Resource
             //
         ];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'nama',
+        'desc',
+        'pembimbing.nama',
+        'pembimbing.mapel',
+    ];
+}
+
 
     public static function getPages(): array
     {

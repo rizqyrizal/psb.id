@@ -106,6 +106,15 @@ class TagihanResource extends Resource
             // Tambah relasi ke Santri jika perlu
         ];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'santri.nama',
+        'keterangan',
+        'amount',
+    ];
+}
+
 
     public static function getPages(): array
     {

@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Livewire\MyCustomButton;
+use Filament\view\PanelsRenderHook;
+use Filament\View\PanelRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Filament\Http\Middleware\Authenticate;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -28,10 +32,16 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
             ->brandName('sekol.id')
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->renderHook(
+                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                fn() => Blade::render('@livewire(\App\Livewire\MyCustomButton::class)')
+            )
+            ->globalSearch()
             ->navigationGroups([
                 'Kelas',
                 'Kelola Pembimbing',

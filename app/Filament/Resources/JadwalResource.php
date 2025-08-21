@@ -153,6 +153,16 @@ class JadwalResource extends Resource
     {
         return [];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'kelas.nama',
+        'hari',
+        'pembimbing.nama',
+        'mapel',
+    ];
+}
+
 
     public static function getPages(): array
     {

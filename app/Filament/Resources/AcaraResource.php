@@ -128,6 +128,11 @@ class AcaraResource extends Resource
             //
         ];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return ['nama', 'tempat'];
+}
+
 
     public static function getPages(): array
     {

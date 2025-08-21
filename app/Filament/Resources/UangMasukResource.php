@@ -163,6 +163,16 @@ class UangMasukResource extends Resource
     {
         return [];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'santri.nama',
+        'id_transaksi',
+        'tipe_transaksi',
+        'keterangan',
+    ];
+}
+
 
     public static function getPages(): array
     {

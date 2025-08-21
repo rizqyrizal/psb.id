@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use BezhanSalleh\FilamentShield\Traits\HasShield;
 use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles; // Tambahan untuk role
@@ -26,6 +27,10 @@ class User extends Authenticatable
         'no_telepon',
         'current_team_id', // Tambahan kalau multi-team
     ];
+        public function userSetting(): HasOne
+    {
+        return $this->hasOne(UserSetting::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -51,10 +56,4 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    /**
-     * Relasi ke Team (opsional, kalau project pakai multi-team)
-     */
-
-
 }

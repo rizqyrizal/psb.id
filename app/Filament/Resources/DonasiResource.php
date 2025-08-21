@@ -127,6 +127,12 @@ class DonasiResource extends Resource
         ];
     }
 
+    public static function getGloballySearchableAttributes(): array
+{
+    return ['nama', 'penerima'];
+}
+
+
     public static function getPages(): array
     {
         return [

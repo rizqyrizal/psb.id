@@ -170,6 +170,15 @@ class AbsensiResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ]);
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'tipe_absensi',
+        'kelas.nama',        // kalau absensi santri
+        'list_absensi.nama', // array nama santri/pembimbing di repeater
+    ];
+}
+
 
     public static function getPages(): array
     {

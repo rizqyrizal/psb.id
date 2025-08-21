@@ -223,6 +223,19 @@ class PembimbingResource extends Resource
             //
         ];
     }
+    public static function getGloballySearchableAttributes(): array
+{
+    return [
+        'nama',
+        'nip',
+        'nuptk',
+        'email',
+        'no_telepon',
+        'kelas.nama',
+        'mapel',
+    ];
+}
+
 
     public static function getPages(): array
     {
