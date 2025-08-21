@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandName('sekol.id')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#586125',
             ])
             ->navigationGroups([
                 'Kelas',
