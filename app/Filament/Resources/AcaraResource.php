@@ -26,40 +26,57 @@ class AcaraResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationGroup = 'Events';
     protected static ?string $navigationLabel = 'Acara';
-        protected static ?int $navigationGroupSort = 3;
+    protected static ?int $navigationGroupSort = 3;
 
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Informasi Acara')
-                    ->description('Masukkan detail lengkap mengenai acara.')
-                    ->columns(2) // Membagi section menjadi dua kolom
+                Forms\Components\Section::make('Informasi Acara')
+                    ->description('Isi detail lengkap mengenai acara yang akan diselenggarakan.')
                     ->schema([
-                        TextInput::make('nama')
+                        Forms\Components\TextInput::make('nama')
                             ->label('Nama Acara')
+                            ->placeholder('Contoh: Kajian Rutin Santri')
                             ->required()
-                            ->maxLength(255),
-                        TextInput::make('tempat')
+                            ->maxLength(255)
+                            ->columnSpan(2),
+
+                        Forms\Components\TextInput::make('tempat')
                             ->label('Tempat')
+                            ->placeholder('Contoh: Masjid Pesantren')
                             ->required()
                             ->maxLength(255),
-                        DatePicker::make('waktu')
+
+                        Forms\Components\DatePicker::make('waktu')
                             ->label('Tanggal Acara')
+                            ->native(false) // tampilkan datepicker modern
+                            ->displayFormat('d F Y')
+                            ->closeOnDateSelection()
                             ->required(),
-                        FileUpload::make('foto')
+
+                        Forms\Components\FileUpload::make('foto')
                             ->label('Foto Acara')
                             ->disk('public')
                             ->directory('acara-foto')
                             ->image()
-                            ->imageEditor() // Tambahkan image editor untuk kemudahan
+                            ->imageEditor()
+                            ->imagePreviewHeight('150')
+                            ->downloadable()
+                            ->openable()
+                            ->columnSpanFull()
                             ->required(),
-                        Textarea::make('desc')
-                            ->label('Deskripsi')
+
+                        Forms\Components\Textarea::make('desc')
+                            ->label('Deskripsi Acara')
+                            ->placeholder('Tuliskan detail acara, pemateri, atau agenda...')
+                            ->autosize()
+                            ->rows(4)
                             ->required()
-                            ->columnSpanFull(), // Membuat textarea menempati seluruh lebar
+                            ->columnSpanFull(),
                     ])
+                    ->columns(2), // dua kolom biar rapi
             ]);
     }
 
@@ -129,9 +146,9 @@ class AcaraResource extends Resource
         ];
     }
     public static function getGloballySearchableAttributes(): array
-{
-    return ['nama', 'tempat'];
-}
+    {
+        return ['nama', 'tempat'];
+    }
 
 
     public static function getPages(): array

@@ -26,7 +26,7 @@ class TugasResource extends Resource
 
     protected static ?string $navigationLabel = 'Target Santri';
 
-        protected static ?string $navigationGroup = 'Santri';
+    protected static ?string $navigationGroup = 'Santri';
 
     protected static ?string $pluralLabel = 'Tugas';
     protected static ?int $navigationGroupSort = 2;
@@ -36,29 +36,64 @@ class TugasResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('target')
-                    ->required(),
-                select::make('satuan')
-                    ->label('Satuan')
-                    ->options([
-                        'jumlah juz' => 'Jumlah Juz',
-                        'jumlah hadist' => 'Jumlah Hadist',
-                        'lainnya' => 'Lainnya',
+                Forms\Components\Section::make('Informasi Target')
+                    ->description('Detail target yang harus diselesaikan santri')
+                    ->schema([
+                        Forms\Components\TextInput::make('target')
+                            ->label('Nama Target')
+                            ->placeholder('Contoh: Hafalan Juz 30')
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\Select::make('satuan')
+                            ->label('Satuan')
+                            ->options([
+                                'jumlah juz' => 'Jumlah Juz',
+                                'jumlah hadist' => 'Jumlah Hadist',
+                                'lainnya' => 'Lainnya',
+                            ])
+                            ->native(false) // bikin dropdown lebih modern
+                            ->required(),
+
+                        Forms\Components\TextInput::make('jumlah_tugas')
+                            ->label('Goals')
+                            ->numeric()
+                            ->minValue(1)
+                            ->default(1)
+                            ->required()
+                            ->suffix('target'),
+                    ])
+                    ->columns(3),
+
+                Forms\Components\Section::make('Deskripsi Tugas')
+                    ->schema([
+                        Forms\Components\RichEditor::make('deskripsi')
+                            ->label('Deskripsi')
+                            ->placeholder('Tuliskan detail instruksi tugas...')
+                            ->toolbarButtons([
+                                'bold',
+                                'italic',
+                                'bulletList',
+                                'orderedList',
+                                'link',
+                            ])
+                            ->required()
+                            ->columnSpanFull(),
                     ]),
-                RichEditor::make('deskripsi')
-                    ->required()
-                    ->columnSpanFull(),
-                TextInput::make('jumlah_tugas')
-                    ->label('Gols')
-                    ->numeric()
-                    ->required()
-                    ->default(1)
-                    ->minValue(1),
-                DateTimePicker::make('waktu_berakhir')
-                    ->label('Waktu Berakhir')
-                    ->required(),
+
+                Forms\Components\Section::make('Waktu')
+                    ->description('Atur deadline tugas')
+                    ->schema([
+                        Forms\Components\DateTimePicker::make('waktu_berakhir')
+                            ->label('Waktu Berakhir')
+                            ->native(false) // tampilkan datetimepicker modern
+                            ->minutesStep(15)
+                            ->required(),
+                    ])
+                    ->columns(1),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
@@ -113,14 +148,14 @@ class TugasResource extends Resource
         ];
     }
     public static function getGloballySearchableAttributes(): array
-{
-    return [
-        'target',
-        'deskripsi',
-        'satuan',
-        'mapel.nama',
-    ];
-}
+    {
+        return [
+            'target',
+            'deskripsi',
+            'satuan',
+            'mapel.nama',
+        ];
+    }
 
 
     public static function getPages(): array

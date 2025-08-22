@@ -25,22 +25,44 @@ class KelasResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('nama')
-                    ->required()
-                    ->maxLength(255),
-                Select::make('jenjang')
-                    ->label('Jenjang')
-                    ->required()
-                    ->options([
-                        'SMK' => 'SMK',
-                        'SMP' => 'SMP',
-                    ])
-                    ->native(false),
-                TextInput::make('jurusan')
-                    ->required()
-                    ->maxLength(255),
+                \Filament\Forms\Components\Section::make('Informasi Kelas')
+                    ->description('Lengkapi detail kelas, seperti nama, jenjang, dan jurusan.')
+                    ->icon('heroicon-o-academic-cap')
+                    ->collapsible()
+                    ->schema([
+                        \Filament\Forms\Components\Grid::make(2)
+                            ->schema([
+                                TextInput::make('nama')
+                                    ->label('Nama Kelas')
+                                    ->placeholder('Contoh: X RPL 1')
+                                    ->helperText('Gunakan format standar penamaan kelas')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-o-identification'),
+
+                                Select::make('jenjang')
+                                    ->label('Jenjang')
+                                    ->options([
+                                        'SMK' => 'SMK',
+                                        'SMP' => 'SMP',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->helperText('Pilih tingkat pendidikan')
+                                    ->prefixIcon('heroicon-o-building-office'),
+                            ]),
+
+                        TextInput::make('jurusan')
+                            ->label('Jurusan')
+                            ->placeholder('Contoh: Rekayasa Perangkat Lunak')
+                            ->helperText('Isi sesuai dengan jurusan kelas')
+                            ->required()
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-briefcase'),
+                    ]),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
@@ -85,13 +107,13 @@ class KelasResource extends Resource
         ];
     }
     public static function getGloballySearchableAttributes(): array
-{
-    return [
-        'nama',
-        'jenjang',
-        'jurusan',
-    ];
-}
+    {
+        return [
+            'nama',
+            'jenjang',
+            'jurusan',
+        ];
+    }
 
 
     public static function getPages(): array

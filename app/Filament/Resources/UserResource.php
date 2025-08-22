@@ -24,36 +24,56 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // Name selalu ada
-            Forms\Components\TextInput::make('name')
-                ->required()
-                ->maxLength(255),
 
-            // Email tetap muncul, required kalau bukan guru
-            Forms\Components\TextInput::make('email')
-                ->email()
-                ->unique(ignoreRecord: true)
-                ->required(fn(Get $get) => $get('roles') !== 'guru'),
+            Forms\Components\Section::make('Informasi User')
+                ->description('Lengkapi detail akun user berikut.')
+                ->schema([
 
-            Forms\Components\TextInput::make('current_team_id')
-                ->label('Team')
-                ->numeric(),
+                    Forms\Components\Grid::make(2)
+                        ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->label('Nama Lengkap')
+                                ->required()
+                                ->maxLength(255),
 
-            Forms\Components\Select::make('roles')
-                ->label('Roles')
-                ->relationship('roles', 'name')
-                ->multiple()
-                ->preload()
-                ->searchable()
-                ->required()
-                ->live()
-                ->afterStateUpdated(fn(Set $set) => $set('password', null)),
-            Forms\Components\TextInput::make('password')
-                ->password()
-                ->maxLength(255)
-                ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
-                ->dehydrated(fn($state) => filled($state))
-                ->required(fn(Get $get, string $operation) => $get('roles') !== 'guru' && $operation === 'create'),
+                            Forms\Components\TextInput::make('email')
+                                ->label('Email')
+                                ->email()
+                                ->unique(ignoreRecord: true)
+                                ->required(fn(Get $get) => ! in_array('guru', (array) $get('roles')))
+                                ->helperText('Wajib diisi kecuali untuk role Guru'),
+                        ]),
+
+                    Forms\Components\TextInput::make('current_team_id')
+                        ->label('Team ID')
+                        ->numeric()
+                        ->helperText('Opsional, biasanya untuk multi-team setup'),
+                ]),
+
+            Forms\Components\Section::make('Hak Akses & Keamanan')
+                ->collapsible()
+                ->schema([
+
+                    Forms\Components\Select::make('roles')
+                        ->label('Roles')
+                        ->relationship('roles', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->required()
+                        ->live()
+                        ->helperText('Pilih satu atau lebih role untuk user ini')
+                        ->afterStateUpdated(fn(Set $set) => $set('password', null)),
+
+                    Forms\Components\TextInput::make('password')
+                        ->password()
+                        ->revealable() // 👈 bisa klik icon buat lihat password
+                        ->maxLength(255)
+                        ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                        ->dehydrated(fn($state) => filled($state))
+                        ->required(fn(Get $get, string $operation) => ! in_array('guru', (array) $get('roles')) && $operation === 'create')
+                        ->helperText('Kosongkan jika tidak ingin mengganti password.'),
+                ]),
         ]);
     }
 

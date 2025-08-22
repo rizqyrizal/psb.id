@@ -26,38 +26,79 @@ class MateriResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
     protected static ?string $navigationGroup = 'Kelola Pembimbing';
     protected static ?string $navigationLabel = 'Materi';
-        protected static ?int $navigationGroupSort = 1;
+    protected static ?int $navigationGroupSort = 1;
 
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Card::make()
+                Forms\Components\Section::make('Informasi Pembimbing')
+                    ->description('Pilih pembimbing dan mata pelajaran terkait materi ini.')
+                    ->icon('heroicon-o-user-circle')
+                    ->collapsible()
                     ->schema([
-                        Select::make('pembimbing_id')
-                            ->label('Pembimbing')
-                            ->relationship('pembimbing', 'nama') // Asumsi nama kolom di tabel Guru adalah 'nama'
-                            ->required()
-                            ->searchable()
-                            ->preload(),
-                        Select::make('mapel_id')
-                            ->label('Mata Pelajaran')
-                            ->relationship('pembimbing', 'mapel') // Asumsi nama kolom di tabel Mapel adalah 'nama'
-                            ->required()
-                            ->searchable()
-                            ->preload(),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Select::make('pembimbing_id')
+                                    ->label('Pembimbing')
+                                    ->placeholder('Pilih pembimbing')
+                                    ->relationship('pembimbing', 'nama')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive(),
+
+                                Select::make('mapel_id')
+                                    ->label('Mata Pelajaran')
+                                    ->placeholder('Pilih mata pelajaran')
+                                    ->options(function (Forms\Get $get) {
+                                        $pembimbingId = $get('pembimbing_id');
+                                        if (!$pembimbingId) return [];
+
+                                        $pembimbing = \App\Models\Pembimbing::find($pembimbingId);
+                                        if (!$pembimbing || empty($pembimbing->mapel)) return [];
+
+                                        // Jika mapel berupa array dari JSON
+                                        if (is_array($pembimbing->mapel)) {
+                                            return collect($pembimbing->mapel)
+                                                ->mapWithKeys(fn($mapel) => [$mapel => $mapel])
+                                                ->toArray();
+                                        }
+
+                                        // Jika hanya string
+                                        return [$pembimbing->mapel => $pembimbing->mapel];
+                                    })
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+                            ]),
+                    ]),
+
+                Forms\Components\Section::make('Detail Materi')
+                    ->description('Isi detail tentang materi yang diajarkan.')
+                    ->icon('heroicon-o-document-text')
+                    ->collapsible()
+                    ->schema([
                         TextInput::make('nama')
                             ->label('Judul Materi')
+                            ->placeholder('Contoh: Algoritma Dasar')
+                            ->helperText('Gunakan judul yang jelas & singkat')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-book-open'),
+
                         Textarea::make('desc')
                             ->label('Deskripsi')
+                            ->placeholder('Tuliskan ringkasan isi materi...')
+                            ->helperText('Deskripsi maksimal 500 karakter')
                             ->rows(5)
+                            ->maxLength(500)
                             ->columnSpanFull(),
-                    ])
+                    ]),
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
@@ -78,7 +119,7 @@ class MateriResource extends Resource
                 TextColumn::make('desc')
                     ->label('Deskripsi')
                     ->words(10) // Hanya menampilkan 10 kata pertama
-                    ->tooltip(fn ($record): string => $record->desc) // Tampilkan deskripsi lengkap saat di-hover
+                    ->tooltip(fn($record): string => $record->desc) // Tampilkan deskripsi lengkap saat di-hover
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -113,14 +154,14 @@ class MateriResource extends Resource
         ];
     }
     public static function getGloballySearchableAttributes(): array
-{
-    return [
-        'nama',
-        'desc',
-        'pembimbing.nama',
-        'pembimbing.mapel',
-    ];
-}
+    {
+        return [
+            'nama',
+            'desc',
+            'pembimbing.nama',
+            'pembimbing.mapel',
+        ];
+    }
 
 
     public static function getPages(): array

@@ -28,34 +28,43 @@ class DonasiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar'; // Ganti ikon agar lebih sesuai
     protected static ?string $navigationLabel = 'Donasi';
     protected static ?string $navigationGroup = 'Events';
-        protected static ?int $navigationGroupSort = 3;
+    protected static ?int $navigationGroupSort = 3;
 
 
-    
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Informasi Donasi')
-                    ->description('Masukkan detail lengkap mengenai donasi.')
+                Forms\Components\Section::make('Informasi Donasi')
+                    ->description('Isi detail lengkap mengenai donasi yang masuk.')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('nama')
+                        Forms\Components\TextInput::make('nama')
                             ->label('Nama Donasi')
+                            ->placeholder('Contoh: Donasi Kitab Santri')
                             ->required()
-                            ->maxLength(255)
-                            ->columnSpan(1),
-                        TextInput::make('penerima')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('penerima')
                             ->label('Penerima Donasi')
+                            ->placeholder('Contoh: Pondok Pesantren XYZ')
                             ->required()
-                            ->maxLength(255)
-                            ->columnSpan(1),
-                        DatePicker::make('waktu')
+                            ->maxLength(255),
+
+                        Forms\Components\DatePicker::make('waktu')
                             ->label('Tanggal Donasi')
+                            ->native(false) // gunakan datepicker modern
+                            ->displayFormat('d F Y')
+                            ->closeOnDateSelection()
                             ->required()
                             ->columnSpanFull(),
-                        Textarea::make('desc')
+
+                        Forms\Components\Textarea::make('desc')
                             ->label('Deskripsi Donasi')
+                            ->placeholder('Tuliskan keterangan tambahan, tujuan, atau catatan donasi...')
+                            ->autosize()
+                            ->rows(4)
                             ->required()
                             ->columnSpanFull(),
                     ])
@@ -100,11 +109,11 @@ class DonasiResource extends Resource
                         return $query
                             ->when(
                                 $data['tanggal_awal'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('waktu', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('waktu', '>=', $date),
                             )
                             ->when(
                                 $data['tanggal_akhir'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('waktu', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('waktu', '<=', $date),
                             );
                     }),
             ])
@@ -128,9 +137,9 @@ class DonasiResource extends Resource
     }
 
     public static function getGloballySearchableAttributes(): array
-{
-    return ['nama', 'penerima'];
-}
+    {
+        return ['nama', 'penerima'];
+    }
 
 
     public static function getPages(): array

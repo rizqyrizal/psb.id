@@ -23,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Get;
+use Filament\Forms\Components\Tabs;
 
 
 class PembimbingResource extends Resource
@@ -37,65 +38,89 @@ class PembimbingResource extends Resource
     {
         return $form
             ->schema([
-                Grid::make(3)
-                    ->schema([
-                        Section::make('Informasi Pribadi')
-                            ->description('Masukkan data diri lengkap guru.')
+                Tabs::make('Pembimbing Form')
+                    ->tabs([
+                        // ================= TAB 1 =================
+                        Tabs\Tab::make('Data Pribadi')
+                            ->icon('heroicon-o-user')
                             ->schema([
-                                TextInput::make('nama')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->columnSpanFull(),
-                                Grid::make(3)
+                                Section::make('Informasi Pribadi')
+                                    ->description('Masukkan data diri lengkap guru.')
                                     ->schema([
-                                        TextInput::make('nip')
+                                        TextInput::make('nama')
+                                            ->label('Nama Lengkap')
+                                            ->placeholder('Contoh: Budi Santoso')
                                             ->required()
-                                            ->maxLength(255),
-                                        TextInput::make('nuptk')
-                                            ->required()
-                                            ->maxLength(255),
-                                        TextInput::make('tempat_lahir')
-                                            ->required()
-                                            ->maxLength(255),
-                                    ]),
-                                Grid::make(3)
-                                    ->schema([
-                                        DatePicker::make('tanggal_lahir')
-                                            ->required(),
-                                        Radio::make('jenis_kelamin')
-                                            ->options([
-                                                'laki-laki' => 'Laki-laki',
-                                                'perempuan' => 'Perempuan',
-                                            ])
-                                            ->required(),
-                                        TextInput::make('no_telepon')
-                                            ->tel()
-                                            ->prefix('+62')
-                                            ->nullable()
-                                            ->maxLength(255),
-                                    ]),
-                                TextInput::make('email')
-                                    ->email()
-                                    ->nullable()
-                                    ->unique(ignoreRecord: true)
-                                    ->maxLength(255)
+                                            ->maxLength(255)
+                                            ->columnSpanFull(),
+
+                                        Grid::make(3)->schema([
+                                            TextInput::make('nip')
+                                                ->label('NIP')
+                                                ->required()
+                                                ->maxLength(255),
+
+                                            TextInput::make('nuptk')
+                                                ->label('NUPTK')
+                                                ->required()
+                                                ->maxLength(255),
+
+                                            TextInput::make('tempat_lahir')
+                                                ->label('Tempat Lahir')
+                                                ->required()
+                                                ->maxLength(255),
+                                        ]),
+
+                                        Grid::make(3)->schema([
+                                            DatePicker::make('tanggal_lahir')
+                                                ->label('Tanggal Lahir')
+                                                ->required(),
+
+                                            Radio::make('jenis_kelamin')
+                                                ->label('Jenis Kelamin')
+                                                ->options([
+                                                    'laki-laki' => 'Laki-laki',
+                                                    'perempuan' => 'Perempuan',
+                                                ])
+                                                ->required(),
+
+                                            TextInput::make('no_telepon')
+                                                ->label('Nomor Telepon')
+                                                ->tel()
+                                                ->prefix('+62')
+                                                ->placeholder('81234567890')
+                                                ->maxLength(255),
+                                        ]),
+
+                                        TextInput::make('email')
+                                            ->label('Email')
+                                            ->email()
+                                            ->placeholder('contoh@email.com')
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->columnSpanFull(),
+                                    ])
                                     ->columnSpanFull(),
-                            ])->columnSpan(2),
-                        Section::make('Opsi Tampilan')
+                            ]),
+
+                        // ================= TAB 2 =================
+                        Tabs\Tab::make('Tampilan & Wali Kelas')
+                            ->icon('heroicon-o-eye')
                             ->schema([
-                                Grid::make(1)
+                                Section::make('Pengaturan Tampilan')
                                     ->schema([
                                         Toggle::make('is_published')
                                             ->label('Tampilkan di pengajar')
                                             ->live(),
+
                                         Toggle::make('is_featured')
                                             ->label('Tandai sebagai Wali Kelas')
                                             ->live(),
 
-                                        // Tambahkan field untuk foto
                                         FileUpload::make('foto')
-                                            ->disk('public') // Sesuaikan disk storage Anda
-                                            ->directory('guru-photos') // Folder untuk menyimpan foto
+                                            ->label('Foto Guru')
+                                            ->disk('public')
+                                            ->directory('guru-photos')
                                             ->avatar(),
 
                                         Select::make('kelas_id')
@@ -105,72 +130,82 @@ class PembimbingResource extends Resource
                                             ->required(fn(Get $get) => $get('is_featured') === true)
                                             ->visible(fn(Get $get) => $get('is_featured') === true),
                                     ])
-                            ])->columnSpan(1),
-                    ]),
-                Section::make('Informasi Kontak dan Tambahan')
-                    ->description('Alamat, mata pelajaran, dan status guru.')
-                    ->schema([
-                        Textarea::make('alamat')
-                            ->required()
-                            ->columnSpanFull(),
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('wali_kelas_type')
-                                    ->label('Tipe Kelas')
-                                    ->options([
-                                        'kelas' => 'Kelas',
-                                        'mustawa' => 'Mustawa',
-                                        'halaqoh' => 'Halaqoh',
-                                    ])
-                                    ->live()
-                                    ->nullable()
-                                    ->visible(fn(\Filament\Forms\Get $get): bool => $get('is_published') === true),
-
-                                Select::make('mapel')
-                                    ->label('Mata Pelajaran')
-                                    ->required()
-                                    ->searchable()
-                                    ->multiple() 
-                                    ->options(function (\Filament\Forms\Get $get) {
-                                        $waliKelasType = $get('wali_kelas_type');
-
-                                        if ($waliKelasType === 'kelas') {
-                                            return [
-                                                'Pendidikan Agama dan Budi Pekerti' => 'Pendidikan Agama dan Budi Pekerti',
-                                                'Pendidikan Pancasila' => 'Pendidikan Pancasila',
-                                                'Bahasa Indonesia' => 'Bahasa Indonesia',
-                                                'Matematika' => 'Matematika',
-                                                'Ilmu Pengetahuan Alam (IPA)' => 'Ilmu Pengetahuan Alam (IPA)',
-                                                'Ilmu Pengetahuan Sosial (IPS)' => 'Ilmu Pengetahuan Sosial (IPS)',
-                                                'Bahasa Inggris' => 'Bahasa Inggris',
-                                                'Seni Budaya' => 'Seni Budaya',
-                                                'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)' => 'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)',
-                                                'Prakarya' => 'Prakarya',
-                                                'Informatika' => 'Informatika',
-                                                'Bahasa Daerah' => 'Bahasa Daerah',
-                                            ];
-                                        } elseif ($waliKelasType === 'mustawa') {
-                                            return [
-                                                'Akidah' => 'Akidah',
-                                                'Fikih' => 'Fikih',
-                                                'Tafsir' => 'Tafsir',
-                                                'Hadis' => 'Hadis',
-                                                'Bahasa Arab' => 'Bahasa Arab',
-                                                'Tahsin' => 'Tahsin',
-                                            ];
-                                        } elseif ($waliKelasType === 'halaqoh') {
-                                            return [
-                                                'Tahfidz Al-Qur\'an' => 'Tahfidz Al-Qur\'an',
-                                                'Hadis' => 'Hadis',
-                                                'Bahasa Arab' => 'Bahasa Arab',
-                                                'Fikih' => 'Fikih',
-                                            ];
-                                        }
-
-                                        return [];
-                                    }),
+                                    ->columnSpanFull(),
                             ]),
-                    ]),
+
+                        // ================= TAB 3 =================
+                        Tabs\Tab::make('Kontak & Tambahan')
+                            ->icon('heroicon-o-phone')
+                            ->schema([
+                                Section::make('Informasi Kontak & Tambahan')
+                                    ->description('Alamat, mata pelajaran, dan status guru.')
+                                    ->schema([
+                                        Textarea::make('alamat')
+                                            ->label('Alamat Lengkap')
+                                            ->required()
+                                            ->columnSpanFull(),
+
+                                        Grid::make(2)->schema([
+                                            Select::make('wali_kelas_type')
+                                                ->label('Tipe Kelas')
+                                                ->options([
+                                                    'kelas' => 'Kelas',
+                                                    'mustawa' => 'Mustawa',
+                                                    'halaqoh' => 'Halaqoh',
+                                                ])
+                                                ->live()
+                                                ->nullable()
+                                                ->visible(fn(Get $get): bool => $get('is_published') === true),
+
+                                            Select::make('mapel')
+                                                ->label('Mata Pelajaran')
+                                                ->required()
+                                                ->searchable()
+                                                ->multiple()
+                                                ->options(function (Get $get) {
+                                                    $waliKelasType = $get('wali_kelas_type');
+
+                                                    if ($waliKelasType === 'kelas') {
+                                                        return [
+                                                            'Pendidikan Agama dan Budi Pekerti' => 'Pendidikan Agama dan Budi Pekerti',
+                                                            'Pendidikan Pancasila' => 'Pendidikan Pancasila',
+                                                            'Bahasa Indonesia' => 'Bahasa Indonesia',
+                                                            'Matematika' => 'Matematika',
+                                                            'Ilmu Pengetahuan Alam (IPA)' => 'Ilmu Pengetahuan Alam (IPA)',
+                                                            'Ilmu Pengetahuan Sosial (IPS)' => 'Ilmu Pengetahuan Sosial (IPS)',
+                                                            'Bahasa Inggris' => 'Bahasa Inggris',
+                                                            'Seni Budaya' => 'Seni Budaya',
+                                                            'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)' => 'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)',
+                                                            'Prakarya' => 'Prakarya',
+                                                            'Informatika' => 'Informatika',
+                                                            'Bahasa Daerah' => 'Bahasa Daerah',
+                                                        ];
+                                                    } elseif ($waliKelasType === 'mustawa') {
+                                                        return [
+                                                            'Akidah' => 'Akidah',
+                                                            'Fikih' => 'Fikih',
+                                                            'Tafsir' => 'Tafsir',
+                                                            'Hadis' => 'Hadis',
+                                                            'Bahasa Arab' => 'Bahasa Arab',
+                                                            'Tahsin' => 'Tahsin',
+                                                        ];
+                                                    } elseif ($waliKelasType === 'halaqoh') {
+                                                        return [
+                                                            'Tahfidz Al-Qur\'an' => 'Tahfidz Al-Qur\'an',
+                                                            'Hadis' => 'Hadis',
+                                                            'Bahasa Arab' => 'Bahasa Arab',
+                                                            'Fikih' => 'Fikih',
+                                                        ];
+                                                    }
+
+                                                    return [];
+                                                }),
+                                        ]),
+                                    ])
+                                    ->columnSpanFull(),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -224,17 +259,17 @@ class PembimbingResource extends Resource
         ];
     }
     public static function getGloballySearchableAttributes(): array
-{
-    return [
-        'nama',
-        'nip',
-        'nuptk',
-        'email',
-        'no_telepon',
-        'kelas.nama',
-        'mapel',
-    ];
-}
+    {
+        return [
+            'nama',
+            'nip',
+            'nuptk',
+            'email',
+            'no_telepon',
+            'kelas.nama',
+            'mapel',
+        ];
+    }
 
 
     public static function getPages(): array

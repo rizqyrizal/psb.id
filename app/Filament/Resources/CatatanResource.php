@@ -30,7 +30,7 @@ class CatatanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-pencil';
     protected static ?string $navigationLabel = 'Catatan';
-        protected static ?string $navigationGroup = 'Santri';
+    protected static ?string $navigationGroup = 'Santri';
     protected static ?string $pluralLabel = 'Catatan';
     protected static ?int $navigationGroupSort = 2;
 
@@ -39,7 +39,10 @@ class CatatanResource extends Resource
     {
         return $form
             ->schema([
-                Card::make()
+                // Bagian Kelas & Tugas
+                Forms\Components\Section::make('Informasi Tugas')
+                    ->description('Pilih kelas, tugas, dan santri yang terkait dengan catatan ini.')
+                    ->collapsible() // bisa ditutup-buka
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -48,19 +51,14 @@ class CatatanResource extends Resource
                                     ->relationship('kelas', 'nama')
                                     ->required()
                                     ->searchable()
-                                    ->preload()
-                                    ->reactive()
-                                    ->afterStateUpdated(fn(Forms\Set $set) => $set('tugas_id', null)),
+                                    ->preload(),
 
                                 Select::make('tugas_id')
                                     ->label('Tugas')
-                                    ->options(fn(Get $get): Collection => Tugas::query()
-                                        ->where('kelas_id', $get('kelas_id'))
-                                        ->pluck('nama_tugas', 'id'))
+                                    ->relationship('tugas', 'nama_tugas')
                                     ->required()
                                     ->searchable()
-                                    ->preload()
-                                    ->disabled(fn(Get $get): bool => ! $get('kelas_id')),
+                                    ->preload(),
                             ]),
 
                         Select::make('santri_id')
@@ -68,13 +66,19 @@ class CatatanResource extends Resource
                             ->relationship('santri', 'nama')
                             ->required()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->columnSpanFull(),
+                    ]),
 
+                // Bagian Catatan
+                Forms\Components\Section::make('Detail Catatan')
+                    ->description('Isi detail tambahan tentang catatan tugas ini.')
+                    ->schema([
                         TextInput::make('from')
                             ->label('Dari')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('Contoh: Guru'),
+                            ->placeholder('Contoh: Guru Pembimbing'),
 
                         Radio::make('status')
                             ->label('Status')
@@ -88,10 +92,10 @@ class CatatanResource extends Resource
 
                         Textarea::make('desc')
                             ->label('Deskripsi')
-                            ->columnSpanFull()
                             ->rows(5)
-                            ->placeholder('Masukkan deskripsi catatan di sini.'),
-                    ])
+                            ->placeholder('Masukkan deskripsi catatan di sini...')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -184,4 +188,3 @@ class CatatanResource extends Resource
         ];
     }
 }
-

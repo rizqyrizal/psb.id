@@ -8,8 +8,6 @@ use App\Filament\Widgets\JumlahKeuanganDanAbsensi;
 use App\Filament\Widgets\JumlahSantriPerKelas;
 use App\Filament\Widgets\KegiatanWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
-use App\Filament\Widgets\ScheduleWidget;
-use App\Filament\Widgets\SwitchModeWidget;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 
@@ -29,11 +27,9 @@ class Dashboard extends BaseDashboard
     {
         return [
             AccountWidget::class,
-            SwitchModeWidget::class,
             FilamentInfoWidget::class,
             KegiatanWidget::class,
             JumlahSantriPerKelas::class,
-            ScheduleWidget::class,
             IuranPondokDanJenjang::class,
             JumlahKeuanganDanAbsensi::class,
         ];

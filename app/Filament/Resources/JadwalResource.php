@@ -28,68 +28,79 @@ class JadwalResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('kelas_id')
-                    ->label('Kelas')
-                    ->relationship('kelas', 'nama')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
+                Forms\Components\Section::make('Informasi Jadwal')
+                    ->description('Lengkapi detail jadwal dengan memilih kelas, pembimbing, serta mata pelajaran.')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Select::make('kelas_id')
+                                    ->label('Kelas')
+                                    ->placeholder('Pilih kelas')
+                                    ->relationship('kelas', 'nama')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
 
-                Select::make('pembimbing_id')
-                    ->label('Pembimbing')
-                    ->relationship('pembimbing', 'nama')
-                    ->required()
-                    ->searchable()
-                    ->preload()
-                    ->reactive(),
+                                Select::make('pembimbing_id')
+                                    ->label('Pembimbing')
+                                    ->placeholder('Pilih pembimbing')
+                                    ->relationship('pembimbing', 'nama')
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive(),
+                            ]),
 
-                Select::make('mapel')
-                    ->label('Mata Pelajaran')
-                    ->options(function (Forms\Get $get) {
-                        $pembimbingId = $get('pembimbing_id');
-                        if (!$pembimbingId) {
-                            return [];
-                        }
+                        Select::make('mapel')
+                            ->label('Mata Pelajaran')
+                            ->placeholder('Mata pelajaran yang diajar')
+                            ->options(function (Forms\Get $get) {
+                                $pembimbingId = $get('pembimbing_id');
+                                if (!$pembimbingId) return [];
 
-                        $pembimbing = Pembimbing::find($pembimbingId);
-                        if (!$pembimbing || empty($pembimbing->mapel)) {
-                            return [];
-                        }
+                                $pembimbing = Pembimbing::find($pembimbingId);
+                                if (!$pembimbing || empty($pembimbing->mapel)) return [];
 
-                        // Jika mapel adalah array (dari cast JSON)
-                        if (is_array($pembimbing->mapel)) {
-                            return collect($pembimbing->mapel)
-                                ->mapWithKeys(fn($mapel) => [$mapel => $mapel])
-                                ->toArray();
-                        }
+                                return is_array($pembimbing->mapel)
+                                    ? collect($pembimbing->mapel)->mapWithKeys(fn($mapel) => [$mapel => $mapel])->toArray()
+                                    : [$pembimbing->mapel => $pembimbing->mapel];
+                            })
+                            ->required(),
+                    ]),
 
-                        // Jika mapel adalah string
-                        return [$pembimbing->mapel => $pembimbing->mapel];
-                    })
-                    ->required(),
+                Forms\Components\Section::make('Waktu Pelajaran')
+                    ->description('Atur hari dan jam pelaksanaan pelajaran.')
+                    ->icon('heroicon-o-clock')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Select::make('hari')
+                                    ->label('Hari')
+                                    ->options([
+                                        'Monday'    => 'Senin',
+                                        'Tuesday'   => 'Selasa',
+                                        'Wednesday' => 'Rabu',
+                                        'Thursday'  => 'Kamis',
+                                        'Friday'    => 'Jumat',
+                                        'Saturday'  => 'Sabtu',
+                                        'Sunday'    => 'Minggu',
+                                    ])
+                                    ->required(),
 
-                Select::make('hari')
-                    ->label('Hari')
-                    ->options([
-                        'Monday'    => 'Senin',
-                        'Tuesday'   => 'Selasa',
-                        'Wednesday' => 'Rabu',
-                        'Thursday'  => 'Kamis',
-                        'Friday'    => 'Jumat',
-                        'Saturday'  => 'Sabtu',
-                        'Sunday'    => 'Minggu',
-                    ])
-                    ->required(),
+                                TimePicker::make('jam_mulai')
+                                    ->label('Jam Mulai')
+                                    ->seconds(false)
+                                    ->required(),
 
-                TimePicker::make('jam_mulai')
-                    ->label('Jam Mulai')
-                    ->seconds(false)
-                    ->required(),
-
-                TimePicker::make('jam_selesai')
-                    ->label('Jam Selesai')
-                    ->seconds(false)
-                    ->required(),
+                                TimePicker::make('jam_selesai')
+                                    ->label('Jam Selesai')
+                                    ->seconds(false)
+                                    ->required(),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -154,14 +165,14 @@ class JadwalResource extends Resource
         return [];
     }
     public static function getGloballySearchableAttributes(): array
-{
-    return [
-        'kelas.nama',
-        'hari',
-        'pembimbing.nama',
-        'mapel',
-    ];
-}
+    {
+        return [
+            'kelas.nama',
+            'hari',
+            'pembimbing.nama',
+            'mapel',
+        ];
+    }
 
 
     public static function getPages(): array
