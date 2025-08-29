@@ -10,8 +10,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
-// === Forms Components ===
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -20,21 +20,15 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section as FormSection;
 use Filament\Forms\Components\Grid as FormGrid;
-
-// === Tables Components ===
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
-
-// === Infolists Components ===
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\Tabs;
-use Filament\Infolists\Components\Group;
-
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 
 class SantriResource extends Resource
 {
@@ -55,32 +49,40 @@ class SantriResource extends Resource
                     ->schema([
                         TextInput::make('nama')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->prefixIcon('heroicon-o-user'),
                         FormGrid::make(3)
                             ->schema([
                                 TextInput::make('nik')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-o-identification'),
                                 TextInput::make('nis')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-o-hashtag'),
                                 TextInput::make('nisn')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-o-hashtag'),
                                 Radio::make('jenis_kelamin')
                                     ->options([
                                         'laki-laki' => 'Laki-laki',
                                         'perempuan' => 'Perempuan',
                                     ])
-                                    ->required(),
+                                    ->required()
+                                    ->inline()
+                                    ->label('Jenis Kelamin'),
                             ]),
                         FormGrid::make(2)
                             ->schema([
                                 TextInput::make('tempat_lahir')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-o-map-pin'),
                                 DatePicker::make('tanggal_lahir')
-                                    ->required(),
+                                    ->required()
+                                    ->prefixIcon('heroicon-o-calendar'),
                             ]),
                     ])->columns(1),
 
@@ -89,19 +91,22 @@ class SantriResource extends Resource
                     ->schema([
                         Textarea::make('alamat')
                             ->required()
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->hintIcon('heroicon-o-home'),
                         FormGrid::make(2)
                             ->schema([
                                 TextInput::make('no_telepon')
                                     ->tel()
                                     ->nullable()
                                     ->maxLength(255)
-                                    ->prefix('+62'),
+                                    ->prefix('+62')
+                                    ->prefixIcon('heroicon-o-phone'),
                                 TextInput::make('email')
                                     ->email()
                                     ->nullable()
                                     ->unique(ignoreRecord: true)
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-o-envelope'),
                             ]),
                     ]),
 
@@ -114,12 +119,14 @@ class SantriResource extends Resource
                                     ->label('Kelas')
                                     ->options(Kelas::all()->pluck('nama', 'id'))
                                     ->nullable()
-                                    ->searchable(),
+                                    ->searchable()
+                                    ->prefixIcon('heroicon-o-academic-cap'),
                                 Select::make('wali_kelas_id')
                                     ->label('Wali Kelas')
                                     ->options(Pembimbing::all()->pluck('nama', 'id'))
                                     ->nullable()
-                                    ->searchable(),
+                                    ->searchable()
+                                    ->prefixIcon('heroicon-o-user-circle'),
                             ]),
                     ]),
 
@@ -131,7 +138,9 @@ class SantriResource extends Resource
                             ->directory('siswa-foto')
                             ->image()
                             ->nullable()
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->avatar()
+                            ->label('Foto Santri'),
                     ])->collapsible(),
             ]);
     }
@@ -143,34 +152,55 @@ class SantriResource extends Resource
             ->columns([
                 TextColumn::make('nama')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-user'),
                 TextColumn::make('nis')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-o-hashtag'),
                 TextColumn::make('nisn')
-                    ->searchable(),
-                TextColumn::make('jenis_kelamin'),
+                    ->searchable()
+                    ->icon('heroicon-o-hashtag'),
+                TextColumn::make('jenis_kelamin')
+                    ->icon('heroicon-o-user-circle'),
                 TextColumn::make('kelas.nama')
                     ->label('Kelas')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-o-academic-cap'),
                 TextColumn::make('pembimbing.nama')
                     ->label('Wali Kelas')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-o-user-group'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-calendar'),
                 ImageColumn::make('foto')
-                    ->square(),
+                    ->square()
+                    ->label('Foto'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(), // ✅ tombol View
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->icon('heroicon-o-eye'),
+                Tables\Actions\EditAction::make()->icon('heroicon-o-pencil'),
+
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Export')
+                    ->exports([
+                        ExcelExport::make()->fromTable(),
+                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->label('Export Data')
+                        ->exports([
+                            ExcelExport::make()->fromTable(),
+                        ]),
                 ]),
             ]);
     }
@@ -184,34 +214,40 @@ class SantriResource extends Resource
                     ->schema([
                         Section::make('Data Pribadi')
                             ->description('Data santri yang telah dikelompokkan')
-                                    ->schema([
-                                        TextEntry::make('nama')
-                                            ->weight('bold')
-                                            ->columnSpanFull(),
-                                        TextEntry::make('kelas.nama')
-                                            ->label('Kelas')
-                                            ->badge(),
+                            ->schema([
+                                TextEntry::make('nama')
+                                    ->weight('bold')
+                                    ->icon('heroicon-o-user')
+                                    ->columnSpanFull(),
+                                TextEntry::make('kelas.nama')
+                                    ->label('Kelas')
+                                    ->badge()
+                                    ->icon('heroicon-o-academic-cap'),
                                 Grid::make(3)
                                     ->schema([
                                         TextEntry::make('nik')
                                             ->badge()
                                             ->color('success')
-                                            ->weight('bold'),
+                                            ->weight('bold')
+                                            ->icon('heroicon-o-identification'),
                                         TextEntry::make('nis')
                                             ->badge()
                                             ->color('success')
-                                            ->weight('bold'),
+                                            ->weight('bold')
+                                            ->icon('heroicon-o-hashtag'),
                                         TextEntry::make('nisn')
                                             ->badge()
                                             ->color('success')
-                                            ->weight('bold'),
+                                            ->weight('bold')
+                                            ->icon('heroicon-o-hashtag'),
                                     ]),
                                 Grid::make(2)
                                     ->schema([
                                         TextEntry::make('alamat')
                                             ->markdown()
                                             ->prose()
-                                            ->columnSpan(1),
+                                            ->columnSpan(1)
+                                            ->icon('heroicon-o-home'),
                                         ImageEntry::make('foto')
                                             ->disk('public')
                                             ->square()
@@ -235,7 +271,7 @@ class SantriResource extends Resource
                                     ->iconColor('info'),
                                 TextEntry::make('tanggal_lahir')
                                     ->label('Tanggal Lahir')
-                                    ->icon('heroicon-o-tag')
+                                    ->icon('heroicon-o-calendar')
                                     ->iconColor('success')
                                     ->date(),
                                 TextEntry::make('email')
@@ -248,37 +284,43 @@ class SantriResource extends Resource
                 Tabs::make('Tabs')
                     ->tabs([
                         Tabs\Tab::make('Akademik')
-                            ->icon('heroicon-o-book-open')
+                            ->icon('heroicon-o-academic-cap')
                             ->schema([
                                 Section::make('Informasi Akademik')
                                     ->schema([
                                         Grid::make(2)
                                             ->schema([
-                                                TextEntry::make('pembimbing.nama')->label('Wali Kelas'),
+                                                TextEntry::make('pembimbing.nama')
+                                                    ->label('Wali Kelas')
+                                                    ->icon('heroicon-o-user-group'),
                                             ]),
                                     ])
-                                    ->columnSpanFull(), // ✅ ini bikin full
+                                    ->columnSpanFull(),
                             ]),
                         Tabs\Tab::make('Mapel')
                             ->icon('heroicon-o-book-open')
                             ->schema([
                                 Section::make('Informasi Mapel')
                                     ->schema([
-                                        TextEntry::make('pembimbing.mapel')->label('Mapel'),
+                                        TextEntry::make('pembimbing.mapel')
+                                            ->label('Mapel')
+                                            ->icon('heroicon-o-book-open'),
                                     ])
                                     ->columnSpanFull(),
                             ]),
                         Tabs\Tab::make('Absensi')
-                            ->icon('heroicon-o-book-open')
+                            ->icon('heroicon-o-clipboard-document-check')
                             ->schema([
                                 Section::make('Informasi Absensi')
                                     ->schema([
-                                        TextEntry::make('absensi')->label('Absensi'),
+                                        TextEntry::make('absensi')
+                                            ->label('Absensi')
+                                            ->icon('heroicon-o-clipboard-document-check'),
                                     ])
                                     ->columnSpanFull(),
                             ]),
                     ])
-                    ->columnSpanFull(), // ✅ biar tabnya juga full
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -305,7 +347,7 @@ class SantriResource extends Resource
             'index' => Pages\ListSantris::route('/'),
             'create' => Pages\CreateSantri::route('/create'),
             'edit' => Pages\EditSantri::route('/{record}/edit'),
-            'view' => Pages\ViewSantri::route('/{record}'), // ✅ halaman View
+            'view' => Pages\ViewSantri::route('/{record}'),
         ];
     }
 }
