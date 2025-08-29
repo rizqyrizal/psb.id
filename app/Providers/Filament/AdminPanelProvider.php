@@ -35,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset()
             ->brandName('sekol.id')
             ->colors([
-                'primary' => '#586125',
+                'primary' => '#0000FF',
             ])
             ->renderHook(
                 PanelsRenderHook::GLOBAL_SEARCH_AFTER,
