@@ -24,7 +24,7 @@ return [
         'enabled' => true,
         'name' => 'super_admin',
         'define_via_gate' => false,
-        'intercept_gate' => true, // after
+        'intercept_gate' => 'before', // after
     ],
 
     'panel_user' => [
@@ -86,7 +86,8 @@ return [
     ],
 
     'register_role_policy' => [
-        'enabled' => false,
+        'enabled' => false
+    ,
     ],
 
 ];

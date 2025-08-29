@@ -35,12 +35,8 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset()
             ->brandName('sekol.id')
             ->colors([
-                'primary' => '#0000FF',
+                'primary' => '#106a70ff',
             ])
-            ->renderHook(
-                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
-                fn() => Blade::render('@livewire(\App\Livewire\MyCustomButton::class)')
-            )
             ->globalSearch()
             ->navigationGroups([
                 'Kelas',

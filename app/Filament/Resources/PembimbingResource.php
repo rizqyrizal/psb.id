@@ -127,6 +127,7 @@ class PembimbingResource extends Resource
                                             ->label('Wali Kelas')
                                             ->relationship('kelas', 'nama')
                                             ->searchable()
+                                            ->preload()
                                             ->required(fn(Get $get) => $get('is_featured') === true)
                                             ->visible(fn(Get $get) => $get('is_featured') === true),
                                     ])

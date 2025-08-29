@@ -45,6 +45,8 @@ class KelasResource extends Resource
                                     ->options([
                                         'SMK' => 'SMK',
                                         'SMP' => 'SMP',
+                                        'slta' => 'SLTA',
+                                        'sltp' => 'SLTP',
                                     ])
                                     ->required()
                                     ->native(false)
