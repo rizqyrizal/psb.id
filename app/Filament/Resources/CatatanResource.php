@@ -30,7 +30,7 @@ class CatatanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-pencil';
     protected static ?string $navigationLabel = 'Catatan';
-    protected static ?string $navigationGroup = 'Santri';
+    protected static ?string $navigationGroup = 'Kelola Santri';
     protected static ?string $pluralLabel = 'Catatan';
     protected static ?int $navigationGroupSort = 2;
 

@@ -7,6 +7,7 @@ use BezhanSalleh\FilamentShield\Traits\HasShield;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles; // Tambahan untuk role
 use Laravel\Sanctum\HasApiTokens; // Kalau pakai Sanctum API Token
@@ -27,9 +28,9 @@ class User extends Authenticatable
         'no_telepon',
         'current_team_id', // Tambahan kalau multi-team
     ];
-        public function userSetting(): HasOne
+    public function currentTeam(): BelongsTo
     {
-        return $this->hasOne(UserSetting::class);
+        return $this->belongsTo(Team::class, 'current_team_id');
     }
 
     /**

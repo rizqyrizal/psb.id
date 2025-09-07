@@ -35,9 +35,9 @@ class SantriResource extends Resource
     protected static ?string $model = Santri::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'Santri';
+    protected static ?string $navigationGroup = 'Kelola Santri';
 
-    protected static ?string $navigationLabel = 'Kelola Santri';
+    protected static ?string $navigationLabel = ' Santri';
 
     // === FORM ===
     public static function form(Form $form): Form
@@ -188,7 +188,7 @@ class SantriResource extends Resource
             ])
             ->headerActions([
                 ExportAction::make()
-                    ->label('Export')
+                    ->label('Export') 
                     ->exports([
                         ExcelExport::make()->fromTable(),
                     ]),

@@ -11,6 +11,10 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+
 
 class TagihanResource extends Resource
 {
@@ -20,7 +24,7 @@ class TagihanResource extends Resource
 
     protected static ?string $navigationLabel = 'Tagihan';
     protected static ?string $modelLabel = 'Tagihan';
-    protected static ?string $navigationGroup = 'Santri';
+    protected static ?string $navigationGroup = 'Kelola Santri';
 
     protected static ?string $pluralModelLabel = 'Daftar Tagihan';
 
@@ -129,9 +133,21 @@ class TagihanResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Export')
+                    ->exports([
+                        ExcelExport::make()->fromTable(),
+                    ]),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->label('Export Data')
+                        ->exports([
+                            ExcelExport::make()->fromTable(),
+                        ]),
                 ]),
             ]);
     }
