@@ -12,7 +12,9 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -40,8 +42,8 @@ class PembimbingResource extends Resource
             ->schema([
                 Grid::make(3)
                     ->schema([
-                        // Card Utama untuk Data Pribadi
-                        Card::make()
+                        // Card Utama untuk Data Pribadi diganti dengan Section
+                        Section::make('Data Pribadi')
                             ->schema([
                                 TextInput::make('nama')
                                     ->label('Nama Lengkap')
@@ -95,40 +97,39 @@ class PembimbingResource extends Resource
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-o-envelope'),
                             ])
+                            ->columns(1) // Menambahkan kolom untuk tata letak yang lebih rapi
                             ->columnSpan(2),
 
                         // ================= TAB 2 =================
-                        Tabs\Tab::make('Tampilan & Wali Kelas')
+                        // Tab ini tidak bisa langsung berada di Grid, harus di dalam Section atau di luar Grid
+                        Section::make('Tampilan & Wali Kelas')
                             ->icon('heroicon-o-eye')
                             ->schema([
-                                Section::make('Pengaturan Tampilan')
-                                    ->schema([
-                                        Toggle::make('is_published')
-                                            ->label('Tampilkan di pengajar')
-                                            ->live(),
+                                Toggle::make('is_published')
+                                    ->label('Tampilkan di pengajar')
+                                    ->live(),
 
-                                        Toggle::make('is_featured')
-                                            ->label('Tandai sebagai Wali Kelas')
-                                            ->live(),
+                                Toggle::make('is_featured')
+                                    ->label('Tandai sebagai Wali Kelas')
+                                    ->live(),
 
-                                        FileUpload::make('foto')
-                                            ->label('Foto Guru')
-                                            ->disk('public')
-                                            ->directory('guru-photos')
-                                            ->avatar(),
+                                FileUpload::make('foto')
+                                    ->label('Foto Guru')
+                                    ->disk('public')
+                                    ->directory('guru-photos')
+                                    ->avatar(),
 
-                                        Select::make('kelas_id')
-                                            ->label('Wali Kelas')
-                                            ->relationship('kelas', 'nama')
-                                            ->searchable()
-                                            ->required(fn(Get $get) => $get('is_featured') === true)
-                                            ->visible(fn(Get $get) => $get('is_featured') === true),
-                                    ])
-                                    ->columnSpanFull(),
-                            ]),
+                                Select::make('kelas_id')
+                                    ->label('Wali Kelas')
+                                    ->relationship('kelas', 'nama')
+                                    ->searchable()
+                                    ->required(fn(Get $get) => $get('is_featured') === true)
+                                    ->visible(fn(Get $get) => $get('is_featured') === true),
+                            ])
+                            ->columnSpan(1), // Menggunakan columnSpan(1) untuk menempatkannya di sisi kanan
 
-                        // Card Terakhir untuk Alamat dan Mata Pelajaran
-                        Card::make()
+                        // Card Terakhir untuk Alamat dan Mata Pelajaran diganti dengan Section
+                        Section::make('Alamat & Mata Pelajaran')
                             ->schema([
                                 Textarea::make('alamat')
                                     ->label('Alamat Lengkap')
@@ -190,6 +191,7 @@ class PembimbingResource extends Resource
                                         }),
                                 ]),
                             ])
+                            ->columns(1) // Menambahkan kolom untuk tata letak yang lebih rapi
                             ->columnSpanFull(),
                     ]),
             ]);
