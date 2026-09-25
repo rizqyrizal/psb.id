@@ -59,3 +59,28 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+Cara run project ini:
+1. Pertama kali clone (sekarang sudah dilakukan):
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+2. Setup database — edit .env (saat ini pgsql). Alternatif paling cepat pakai sqlite:
+DB_CONNECTION=sqlite
+# (hapus baris DB_HOST, DB_PORT, dll atau komen)
+touch database/database.sqlite
+php artisan migrate --seed
+3. Jalankan dev server:
+php artisan serve
+Akses http://127.0.0.1:8000 → redirect ke /admin (Filament panel).
+Atau pakai script bawaan (server + queue + log + vite sekaligus):
+composer run dev
+4. Akun admin — butuh user. Cek seeder di database/seeders/:
+php artisan db:seed --class=NamaSeeder
+Kalau tidak ada seeder user, bikin manual via tinker:
+php artisan tinker
+>>> \App\Models\User::create(['name'=>'Admin','email'=>'admin@psb.id','password'=>bcrypt('password')]);
+Yang perlu dicek sebelum jalan:
+- .env DB host/credentials benar
+- php artisan storage:link (untuk upload file)
